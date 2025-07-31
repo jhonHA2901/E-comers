@@ -1,0 +1,96 @@
+<UserControl x:Class="CrepesCoffeeAdmin.Views.ProductsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Text="Gestión de Productos" FontSize="24" FontWeight="Bold"/>
+            <Button x:Name="btnAddProduct" Grid.Column="1" Content="➕ Agregar Producto" 
+                    Padding="15,8" Background="#4CAF50" Foreground="White" 
+                    BorderThickness="0" FontWeight="SemiBold"/>
+        </Grid>
+        
+        <!-- Filtros -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBox x:Name="txtSearch" Grid.Column="0" Margin="0,0,10,0" 
+                     VerticalAlignment="Center" Padding="10,8" 
+                     FontSize="14">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                            <VisualBrush.Visual>
+                                                <TextBlock Text="Buscar productos..." Foreground="Gray" FontStyle="Italic"/>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            
+            <ComboBox x:Name="cmbCategoryFilter" Grid.Column="1" Margin="0,0,10,0" 
+                      Width="150" VerticalAlignment="Center" Padding="10,8"
+                      DisplayMemberPath="Nombre"/>
+            
+            <Button x:Name="btnRefresh" Grid.Column="2" Content="🔄 Actualizar" 
+                    Padding="15,8" Background="#2196F3" Foreground="White" 
+                    BorderThickness="0" FontWeight="SemiBold"/>
+        </Grid>
+        
+        <!-- Lista de productos -->
+        <DataGrid x:Name="dgProducts" Grid.Row="2" AutoGenerateColumns="False" 
+                  IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False"
+                  GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                  SelectionMode="Single" SelectionChanged="DgProducts_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="200"/>
+                <DataGridTextColumn Header="Precio" Binding="{Binding PrecioFormateado}" Width="100"/>
+                <DataGridTextColumn Header="Stock" Binding="{Binding StockStatus}" Width="100"/>
+                <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria.Nombre}" Width="120"/>
+                <DataGridTextColumn Header="Fecha Creación" Binding="{Binding CreatedAt, StringFormat=dd/MM/yyyy}" Width="120"/>
+                <DataGridTemplateColumn Header="Acciones" Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="✏️" Margin="2" Padding="8,4" 
+                                        Background="#FF9800" Foreground="White" 
+                                        BorderThickness="0" Click="BtnEdit_Click"/>
+                                <Button Content="🗑️" Margin="2" Padding="8,4" 
+                                        Background="#F44336" Foreground="White" 
+                                        BorderThickness="0" Click="BtnDelete_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl> 
