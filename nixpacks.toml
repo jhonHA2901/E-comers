@@ -3,12 +3,12 @@ aptPkgs = ['default-mysql-client']
 
 [phases.build]
 cmds = [
-  "bash -c 'cd backend && composer install --no-interaction --prefer-dist --optimize-autoloader'",
-  "bash -c 'cd backend/frontend && npm install && npm run build'"
+  "composer install --no-interaction --prefer-dist --optimize-autoloader",
+  "cd frontend && npm install && npm run build"
 ]
 
 [start]
-cmd = "bash -c 'cd backend && php artisan migrate --force && vendor/bin/heroku-php-apache2 public/'"
+cmd = "php artisan migrate --force && vendor/bin/heroku-php-apache2 public/"
 
 [nixpacks]
 include = ["backend/**", "railway.json", "nixpacks.toml"]
