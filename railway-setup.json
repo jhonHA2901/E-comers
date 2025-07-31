@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "plugins": [
+    {
+      "name": "MySQL",
+      "envs": {
+        "RAILWAY_DATABASE": "${{ plugins.mysql.database }}",
+        "RAILWAY_USERNAME": "${{ plugins.mysql.username }}",
+        "RAILWAY_PASSWORD": "${{ plugins.mysql.password }}",
+        "RAILWAY_PRIVATE_DOMAIN": "${{ plugins.mysql.domain }}",
+        "RAILWAY_PORT": "${{ plugins.mysql.port }}"
+      }
+    }
+  ],
+  "services": [
+    {
+      "name": "web",
+      "envs": {
+        "APP_NAME": "CrepesAndCoffee",
+        "APP_ENV": "production",
+        "APP_DEBUG": "false",
+        "APP_URL": "${{ services.web.domains[0] }}",
+        "DB_CONNECTION": "mysql",
+        "DB_HOST": "${{ plugins.mysql.domain }}",
+        "DB_PORT": "${{ plugins.mysql.port }}",
+        "DB_DATABASE": "${{ plugins.mysql.database }}",
+        "DB_USERNAME": "${{ plugins.mysql.username }}",
+        "DB_PASSWORD": "${{ plugins.mysql.password }}"
+      }
+    }
+  ]
+}

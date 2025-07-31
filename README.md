@@ -106,11 +106,57 @@ admin-app/CrepesCoffeeAdmin/CrepesCoffeeAdmin.csproj
 
 ## Despliegue en Railway
 
-Para desplegar en Railway, sigue estos pasos:
+Este proyecto está configurado para ser desplegado fácilmente en Railway. Sigue estos pasos detallados:
 
-1. Crea una cuenta en Railway.app
-2. Conecta tu repositorio de GitHub
-3. Configura las variables de entorno necesarias
-4. Configura los servicios para el backend y frontend
+### 1. Preparación
 
-Consulta la documentación de Railway para más detalles sobre la configuración específica.
+- Asegúrate de que tu código esté en un repositorio de GitHub
+- Verifica que has realizado commit de todos los archivos de configuración (railway.json, nixpacks.toml, .env.railway, etc.)
+
+### 2. Crear cuenta y proyecto en Railway
+
+1. Crea una cuenta en [Railway.app](https://railway.app/) si aún no tienes una
+2. Desde el dashboard, haz clic en "New Project"
+3. Selecciona "Deploy from GitHub repo"
+4. Conecta tu cuenta de GitHub y selecciona el repositorio
+
+### 3. Configurar base de datos
+
+1. En tu proyecto de Railway, haz clic en "New Service"
+2. Selecciona "Database" y luego "MySQL"
+3. Espera a que se aprovisione la base de datos
+4. Anota las credenciales de conexión (host, puerto, nombre de base de datos, usuario y contraseña)
+
+### 4. Configurar variables de entorno
+
+En la sección "Variables" de tu proyecto en Railway, configura las siguientes variables:
+
+```
+APP_NAME=CrepesAndCoffee
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=${RAILWAY_PUBLIC_DOMAIN}
+
+DB_CONNECTION=mysql
+DB_HOST=${RAILWAY_PRIVATE_DOMAIN}
+DB_PORT=${RAILWAY_PORT}
+DB_DATABASE=${RAILWAY_DATABASE}
+DB_USERNAME=${RAILWAY_USERNAME}
+DB_PASSWORD=${RAILWAY_PASSWORD}
+```
+
+### 5. Despliegue
+
+Railway detectará automáticamente la configuración en los archivos railway.json y nixpacks.toml, y comenzará el proceso de construcción y despliegue.
+
+### 6. Verificación
+
+1. Una vez completado el despliegue, haz clic en la URL generada para acceder a tu aplicación
+2. Verifica que la aplicación funcione correctamente
+3. Revisa los logs en caso de errores
+
+### Solución de problemas comunes
+
+- **Error de base de datos**: Verifica que las variables de entorno de la base de datos estén correctamente configuradas
+- **Error de compilación**: Revisa los logs de construcción para identificar el problema específico
+- **Error de aplicación**: Revisa los logs de la aplicación para identificar errores en tiempo de ejecución

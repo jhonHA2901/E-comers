@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: crepes-coffee-app
+    container_name: crepes-coffee-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=crepes_coffee
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+    depends_on:
+      - db
+    networks:
+      - crepes-coffee-network
+
+  db:
+    image: mysql:8.0
+    container_name: crepes-coffee-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=crepes_coffee
+      - MYSQL_ROOT_PASSWORD=secret
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - crepes-coffee-network
+
+networks:
+  crepes-coffee-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local

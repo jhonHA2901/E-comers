@@ -1,0 +1,30 @@
+# Ignorar directorios y archivos no necesarios para el despliegue
+/admin-app/
+/imagenes/
+/.git/
+/.github/
+/.vscode/
+/.idea/
+
+# Ignorar archivos específicos
+*.md
+!README.md
+*.log
+*.lock
+*.sln
+
+# Ignorar archivos de entorno y configuración local
+.env
+.env.*
+!.env.example
+!.env.railway
+
+# Ignorar archivos de caché y temporales
+/backend/storage/framework/cache/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+/backend/storage/logs/*
+/backend/bootstrap/cache/*
+/backend/frontend/node_modules/
+/backend/frontend/build/
+/backend/frontend/.cache/
