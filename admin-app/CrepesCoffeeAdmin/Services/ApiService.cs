@@ -21,59 +21,104 @@ namespace CrepesCoffeeAdmin.Services
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
+        // Este método se mantiene por compatibilidad pero ya no se utiliza para tokens
+        // Ahora se usa para configurar las cookies de sesión
         public void SetAuthToken(string token)
         {
-            _authToken = token;
-            if (!string.IsNullOrEmpty(token))
-            {
-                _httpClient.DefaultRequestHeaders.Remove("Authorization");
-                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-            }
+            _authToken = token; // Se mantiene para compatibilidad
+            
+            // Ya no se agrega el header de Authorization porque usamos cookies de sesión
+            // Las cookies se manejan automáticamente por HttpClient
         }
 
+        // Este método se mantiene por compatibilidad pero ahora limpia las cookies de sesión
         public void ClearAuthToken()
         {
             _authToken = null;
+            // Limpiar todas las cookies y headers relacionados con la autenticación
+            _httpClient.DefaultRequestHeaders.Remove("Cookie");
             _httpClient.DefaultRequestHeaders.Remove("Authorization");
         }
 
         // Autenticación
         public async Task<ApiResponse<LoginResponse>> LoginAsync(string email, string password)
         {
-            var loginData = new { email, password };
-            var json = JsonConvert.SerializeObject(loginData);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync($"{_baseUrl}/login", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var result = JsonConvert.DeserializeObject<ApiResponse<LoginResponse>>(responseContent);
-                if (result.Success && result.Data?.Token != null)
+                // Primero obtenemos una cookie CSRF
+                await _httpClient.GetAsync($"{_baseUrl}/sanctum/csrf-cookie");
+                
+                // Configurar cookies para mantener la sesión
+                _httpClient.DefaultRequestHeaders.Add("Cookie", "laravel_session=true");
+                
+                var loginData = new { email, password };
+                var json = JsonConvert.SerializeObject(loginData);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync($"{_baseUrl}/auth/login", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
                 {
-                    SetAuthToken(result.Data.Token);
+                    var result = JsonConvert.DeserializeObject<ApiResponse<LoginResponse>>(responseContent);
+                    
+                    // Guardar las cookies de sesión
+                    if (response.Headers.Contains("Set-Cookie"))
+                    {
+                        var cookies = response.Headers.GetValues("Set-Cookie");
+                        foreach (var cookie in cookies)
+                        {
+                            _httpClient.DefaultRequestHeaders.Add("Cookie", cookie);
+                        }
+                    }
+                    
+                    return result;
                 }
-                return result;
+                else
+                {
+                    return new ApiResponse<LoginResponse>
+                    {
+                        Success = false,
+                        Message = response.StatusCode == System.Net.HttpStatusCode.Unauthorized 
+                            ? "Credenciales incorrectas" 
+                            : "Error en el servidor"
+                    };
+                }
             }
-
-            return new ApiResponse<LoginResponse>
+            catch (Exception ex)
             {
-                Success = false,
-                Message = "Error de conexión con el servidor"
-            };
+                return new ApiResponse<LoginResponse>
+                {
+                    Success = false,
+                    Message = $"Error de conexión: {ex.Message}"
+                };
+            }
         }
 
         public async Task<ApiResponse<object>> LogoutAsync()
         {
-            var response = await _httpClient.PostAsync($"{_baseUrl}/logout", null);
-            ClearAuthToken();
-            
-            return new ApiResponse<object>
+            try
             {
-                Success = response.IsSuccessStatusCode,
-                Message = response.IsSuccessStatusCode ? "Logout exitoso" : "Error en logout"
-            };
+                var response = await _httpClient.PostAsync($"{_baseUrl}/auth/logout", null);
+                
+                // Limpiar todas las cookies y headers de autenticación
+                _httpClient.DefaultRequestHeaders.Remove("Cookie");
+                _httpClient.DefaultRequestHeaders.Remove("Authorization");
+                
+                return new ApiResponse<object>
+                {
+                    Success = response.IsSuccessStatusCode,
+                    Message = response.IsSuccessStatusCode ? "Sesión cerrada exitosamente" : "Error al cerrar sesión"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = $"Error de conexión: {ex.Message}"
+                };
+            }
         }
 
         // Dashboard
@@ -361,11 +406,12 @@ namespace CrepesCoffeeAdmin.Services
     {
         [JsonProperty("user")]
         public User? User { get; set; }
-
+        
+        // Estos campos se mantienen por compatibilidad pero ya no se utilizan
         [JsonProperty("token")]
         public string? Token { get; set; }
-
+        
         [JsonProperty("token_type")]
         public string? TokenType { get; set; }
     }
-} 
+}

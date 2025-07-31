@@ -46,6 +46,12 @@ const Login = () => {
     setError('');
 
     try {
+      // Primero obtenemos una cookie CSRF
+      await fetch('http://localhost:8002/sanctum/csrf-cookie', {
+        credentials: 'include'
+      });
+      
+      // Luego intentamos iniciar sesión
       const result = await login(formData.email, formData.password);
       if (result.success) {
         navigate('/', { replace: true });
@@ -55,7 +61,9 @@ const Login = () => {
     } catch (err) {
       console.error('Error en login:', err);
       if (err.response?.status === 419) {
-        setError('Error de autenticación. Intenta nuevamente.');
+        setError('Error de autenticación CSRF. Intenta nuevamente.');
+      } else if (err.response?.status === 401) {
+        setError('Credenciales incorrectas');
       } else {
         setError('Error de conexión con el servidor');
       }
@@ -264,4 +272,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

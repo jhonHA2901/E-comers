@@ -34,14 +34,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     
     // Rutas protegidas (requieren autenticación)
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
     });
-    
-    // Rutas de recuperación de contraseña (opcionales)
-    // Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    // Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.reset');
 });
 
 // Public Product Routes
@@ -106,4 +102,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/users', [AdminController::class, 'getUsers']);
         Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
     });
-}); 
+});

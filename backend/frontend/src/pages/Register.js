@@ -108,19 +108,25 @@ const Register = () => {
     setAlert({ show: false, message: '', severity: 'error' });
 
     try {
+      // Primero obtenemos una cookie CSRF
+      await fetch('http://localhost:8002/sanctum/csrf-cookie', {
+        credentials: 'include'
+      });
+      
+      // Luego intentamos registrar al usuario
       const result = await register(formData);
       
       if (result.success) {
         setAlert({
           show: true,
-          message: '¡Registro exitoso! Redirigiendo...',
+          message: '¡Registro exitoso! Redirigiendo al inicio...',
           severity: 'success'
         });
         
-        // Redirigir después de un breve delay
+        // Redirigir después de un breve delay para mostrar el mensaje
         redirectTimeoutRef.current = setTimeout(() => {
           navigate('/', { replace: true });
-        }, 2000);
+        }, 3000); // Aumentamos el tiempo para que el usuario pueda leer el mensaje
       } else {
         setAlert({
           show: true,
@@ -141,6 +147,15 @@ const Register = () => {
           message: 'Error de autenticación CSRF. Intenta nuevamente.',
           severity: 'error'
         });
+      } else if (error.response?.status === 422) {
+        setAlert({
+          show: true,
+          message: 'Datos de entrada inválidos',
+          severity: 'error'
+        });
+        if (error.response?.data?.errors) {
+          setErrors(error.response.data.errors);
+        }
       } else {
         setAlert({
           show: true,
@@ -182,7 +197,11 @@ const Register = () => {
           </Typography>
 
           {alert.show && (
-            <Alert severity={alert.severity} sx={{ width: '100%', mb: 2 }}>
+            <Alert 
+              severity={alert.severity} 
+              variant="filled"
+              sx={{ width: '100%', mb: 2, fontSize: '1rem' }}
+            >
               {alert.message}
             </Alert>
           )}
@@ -300,4 +319,4 @@ const Register = () => {
   );
 };
 
-export default Register; 
+export default Register;

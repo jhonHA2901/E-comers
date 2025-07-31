@@ -93,8 +93,12 @@ export const authService = {
   },
   
   // Verificar si el usuario está autenticado
-  isAuthenticated() {
-    // La autenticación se manejará con la sesión en el backend
-    return true; // Siempre devuelve true y deja que el backend decida
+  async isAuthenticated() {
+    try {
+      const response = await this.me();
+      return response.success && response.data;
+    } catch (error) {
+      return false;
+    }
   }
 };

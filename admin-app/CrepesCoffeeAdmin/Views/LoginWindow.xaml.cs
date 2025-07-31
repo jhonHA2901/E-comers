@@ -62,8 +62,9 @@ namespace CrepesCoffeeAdmin.Views
                     // Check if user is admin
                     if (loginData.User?.IsAdmin == true)
                     {
-                        // Set authentication
-                        AppState.SetAuthentication(loginData.User, loginData.Token ?? string.Empty);
+                        // Set authentication - ya no necesitamos pasar el token
+                        // porque ahora usamos cookies de sesión
+                        AppState.SetAuthentication(loginData.User);
                         
                         // Show main window
                         var mainWindow = new MainWindow();
@@ -111,4 +112,4 @@ namespace CrepesCoffeeAdmin.Views
             }
         }
     }
-} 
+}

@@ -9,10 +9,12 @@ namespace CrepesCoffeeAdmin.Utils
         public static ApiService ApiService { get; set; } = new ApiService();
         public static User? CurrentUser { get; set; }
 
-        public static void SetAuthentication(User user, string token)
+        public static void SetAuthentication(User user, string token = null)
         {
             CurrentUser = user;
-            ApiService.SetAuthToken(token);
+            // El token ya no se utiliza para la autenticación, pero se mantiene el método por compatibilidad
+            // Las cookies de sesión se manejan automáticamente por HttpClient
+            ApiService.SetAuthToken(token ?? string.Empty);
         }
 
         public static void ClearAuthentication()
@@ -24,4 +26,4 @@ namespace CrepesCoffeeAdmin.Utils
         public static bool IsAuthenticated => CurrentUser != null;
         public static bool IsAdmin => CurrentUser?.IsAdmin == true;
     }
-} 
+}

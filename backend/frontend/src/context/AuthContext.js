@@ -19,6 +19,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // Primero obtenemos una cookie CSRF
+        await fetch('http://localhost:8002/sanctum/csrf-cookie', {
+          credentials: 'include'
+        });
+        
+        // Luego verificamos la sesión
         const response = await authService.me();
         if (response.success) {
           setUser(response.data);

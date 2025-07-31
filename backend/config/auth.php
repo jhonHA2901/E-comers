@@ -41,7 +41,7 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'session', // Cambiado de 'sanctum' a 'session' para usar sesiones
+            'driver' => 'sanctum', // Cambiado de 'session' a 'sanctum' para usar tokens
             'provider' => 'users',
         ],
     ],

@@ -121,7 +121,7 @@ Para acceder al panel necesitas:
 
 - **Autenticación**: Sistema de login seguro
 - **Autorización**: Solo administradores pueden acceder
-- **Tokens**: Autenticación basada en tokens JWT
+- **Sesiones**: Autenticación basada en sesiones
 - **Validación**: Validación de entrada en todos los formularios
 - **Logs**: Registro de actividades administrativas
 
@@ -172,4 +172,4 @@ Este software es propiedad de "Crepes & Coffee" y está protegido por derechos d
 
 ---
 
-**Desarrollado con ❤️ para Crepes & Coffee** 
+**Desarrollado con ❤️ para Crepes & Coffee**
